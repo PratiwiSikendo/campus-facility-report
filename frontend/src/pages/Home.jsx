@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const statusColor = { PENDING: '#f59e0b', IN_PROGRESS: '#3b82f6', RESOLVED: '#10b981', REJECTED: '#ef4444' };
-const statusBg = { PENDING: '#fffbeb', IN_PROGRESS: '#eff6ff', RESOLVED: '#f0fdf4', REJECTED: '#fef2f2' };
+const statusColor = { PENDING: '#d97706', IN_PROGRESS: '#2563eb', RESOLVED: '#059669', REJECTED: '#dc2626' };
+const statusBg = { PENDING: '#fef3c7', IN_PROGRESS: '#dbeafe', RESOLVED: '#d1fae5', REJECTED: '#fee2e2' };
 const statusLabel = { PENDING: 'Menunggu', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak' };
 
 export default function Home() {
@@ -24,170 +24,176 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px 60px' }}>
+    <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 16px 60px' }}>
       <style>{`
+        /* HERO */
         .hero {
-          background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #0ea5e9 100%);
-          border-radius: var(--radius-xl); padding: 52px 40px;
-          margin: 28px 0 32px; position: relative; overflow: hidden;
-          box-shadow: var(--shadow-xl);
+          background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 60%, #0ea5e9 100%);
+          border-radius: 20px; padding: 24px 20px;
+          margin: 16px 0 20px; position: relative; overflow: hidden;
+          box-shadow: 0 8px 32px rgba(37,99,235,0.25);
         }
         .hero::before {
-          content: ''; position: absolute; top: -40px; right: -40px;
-          width: 200px; height: 200px; border-radius: 50%;
-          background: rgba(255,255,255,0.08);
+          content: ''; position: absolute; top: -30px; right: -30px;
+          width: 120px; height: 120px; border-radius: 50%;
+          background: rgba(255,255,255,0.07);
         }
         .hero::after {
-          content: ''; position: absolute; bottom: -60px; right: 80px;
-          width: 280px; height: 280px; border-radius: 50%;
+          content: ''; position: absolute; bottom: -40px; right: 40px;
+          width: 160px; height: 160px; border-radius: 50%;
           background: rgba(255,255,255,0.05);
         }
         .hero-badge {
-          display: inline-flex; align-items: center; gap: 6px;
+          display: inline-flex; align-items: center; gap: 5px;
           background: rgba(255,255,255,0.15); color: white;
-          padding: 6px 14px; border-radius: 20px; font-size: 12px;
-          font-weight: 600; margin-bottom: 16px; backdrop-filter: blur(8px);
+          padding: 4px 10px; border-radius: 20px; font-size: 11px;
+          font-weight: 600; margin-bottom: 10px;
           border: 1px solid rgba(255,255,255,0.2);
         }
-        .hero h1 { color: white; font-size: clamp(24px, 4vw, 36px); font-weight: 700; margin-bottom: 12px; }
-        .hero p { color: rgba(255,255,255,0.85); font-size: 15px; max-width: 480px; margin-bottom: 28px; line-height: 1.6; }
+        .hero h1 {
+          color: white; font-size: 20px; font-weight: 700;
+          margin-bottom: 8px; line-height: 1.3;
+        }
+        .hero p {
+          color: rgba(255,255,255,0.82); font-size: 13px;
+          margin-bottom: 16px; line-height: 1.5; max-width: 320px;
+        }
         .hero-btn {
-          display: inline-flex; align-items: center; gap: 8px;
-          background: white; color: var(--primary-dark);
-          padding: 12px 24px; border-radius: 10px;
-          text-decoration: none; font-weight: 700; font-size: 14px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.15); transition: all 0.2s;
+          display: inline-flex; align-items: center; gap: 6px;
+          background: white; color: #1d4ed8;
+          padding: 9px 18px; border-radius: 8px;
+          text-decoration: none; font-weight: 700; font-size: 13px;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.15); transition: all 0.2s;
         }
-        .hero-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .hero-btn:hover { transform: translateY(-1px); }
         .hero-stats {
-          display: flex; gap: 24px; margin-top: 32px; flex-wrap: wrap;
+          display: flex; gap: 20px; margin-top: 18px; flex-wrap: wrap;
         }
-        .hero-stat { color: white; }
-        .hero-stat-num { font-size: 24px; font-weight: 700; }
-        .hero-stat-label { font-size: 12px; opacity: 0.75; }
+        .hero-stat-num { color: white; font-size: 20px; font-weight: 800; line-height: 1; }
+        .hero-stat-lbl { color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 2px; }
 
-        .filter-bar {
-          display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;
-        }
-        .filter-select {
-          flex: 1; min-width: 160px; padding: 10px 14px;
-          border: 1.5px solid var(--border); border-radius: 10px;
-          background: var(--surface); font-size: 14px;
-          box-shadow: var(--shadow-sm); appearance: none;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-          background-repeat: no-repeat; background-position: right 12px center;
-          padding-right: 32px; cursor: pointer;
+        /* FILTER */
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 16px; }
+        .filter-sel {
+          flex: 1; padding: 9px 12px; border: 1.5px solid #e2eaf6;
+          border-radius: 10px; background: white; font-size: 13px;
+          box-shadow: 0 1px 4px rgba(59,130,246,0.08);
+          appearance: none; cursor: pointer; color: #0f172a;
         }
 
-        .report-card {
-          background: var(--surface); border-radius: var(--radius-lg);
-          border: 1px solid var(--border); padding: 20px;
-          margin-bottom: 14px; display: flex; gap: 16px;
-          box-shadow: var(--shadow-sm); transition: all 0.2s;
+        /* SECTION TITLE */
+        .sec-title {
+          font-size: 16px; font-weight: 700; margin-bottom: 12px;
+          color: #0f172a; display: flex; align-items: center; gap: 8px;
         }
-        .report-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); border-color: var(--primary-mid); }
-        .report-img { width: 90px; height: 72px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
-        .report-img-placeholder {
-          width: 90px; height: 72px; border-radius: 10px;
-          background: var(--primary-light); display: flex; align-items: center;
-          justify-content: center; font-size: 24px; flex-shrink: 0;
+        .sec-title::after { content: ''; flex: 1; height: 1px; background: #e2eaf6; }
+
+        /* REPORT CARD */
+        .r-card {
+          background: white; border-radius: 14px;
+          border: 1.5px solid #e2eaf6; padding: 14px;
+          margin-bottom: 10px; display: flex; gap: 12px;
+          box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+          transition: all 0.2s;
         }
-        .status-badge {
-          padding: 4px 12px; border-radius: 20px;
-          font-size: 12px; font-weight: 600; white-space: nowrap;
+        .r-card:hover { box-shadow: 0 4px 16px rgba(59,130,246,0.14); transform: translateY(-1px); border-color: #bfdbfe; }
+        .r-thumb {
+          width: 72px; height: 60px; border-radius: 8px;
+          object-fit: cover; flex-shrink: 0;
         }
-        .section-title {
-          font-size: 20px; font-weight: 700; margin-bottom: 16px;
-          display: flex; align-items: center; gap: 10px;
+        .r-thumb-ph {
+          width: 72px; height: 60px; border-radius: 8px;
+          background: #eff6ff; display: flex; align-items: center;
+          justify-content: center; font-size: 20px; flex-shrink: 0;
         }
-        .section-title::after {
-          content: ''; flex: 1; height: 1px; background: var(--border);
+        .r-badge {
+          padding: 3px 9px; border-radius: 20px;
+          font-size: 11px; font-weight: 600; white-space: nowrap;
         }
-        .empty-state {
-          text-align: center; padding: 60px 20px;
-          background: var(--surface); border-radius: var(--radius-lg);
-          border: 2px dashed var(--border);
+        .r-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
+        .r-meta { color: #64748b; font-size: 12px; margin-bottom: 5px; }
+        .r-desc { font-size: 13px; color: #374151; line-height: 1.4; }
+        .r-date { color: #94a3b8; font-size: 11px; margin-top: 6px; }
+
+        /* EMPTY */
+        .empty {
+          text-align: center; padding: 48px 20px;
+          background: white; border-radius: 14px;
+          border: 2px dashed #e2eaf6;
         }
         .empty-icon {
-          width: 64px; height: 64px; border-radius: 16px;
-          background: var(--primary-light); display: flex; align-items: center;
-          justify-content: center; font-size: 28px; margin: 0 auto 16px;
-        }
-        @media (max-width: 600px) {
-          .hero { padding: 32px 20px; }
-          .report-img, .report-img-placeholder { width: 70px; height: 56px; }
+          width: 52px; height: 52px; border-radius: 14px;
+          background: #eff6ff; display: flex; align-items: center;
+          justify-content: center; font-size: 22px; margin: 0 auto 12px;
         }
       `}</style>
 
-      {/* Hero */}
+      {/* Hero — compact untuk mobile */}
       <div className="hero">
         <div className="hero-badge">✦ Sistem Pelaporan Digital</div>
         <h1>Laporkan Kerusakan<br />Fasilitas Kampus</h1>
-        <p>Pantau status perbaikan secara real-time. Bersama kita jaga fasilitas kampus tetap prima.</p>
-        <Link to="/laporan/buat" className="hero-btn">
-          + Buat Laporan Baru
-        </Link>
+        <p>Pantau status perbaikan secara real-time bersama kami.</p>
+        <Link to="/laporan/buat" className="hero-btn">+ Buat Laporan</Link>
         <div className="hero-stats">
-          <div className="hero-stat">
+          <div>
             <div className="hero-stat-num">{reports.length}</div>
-            <div className="hero-stat-label">Total Laporan</div>
+            <div className="hero-stat-lbl">Total Laporan</div>
           </div>
-          <div className="hero-stat">
+          <div>
             <div className="hero-stat-num">{reports.filter(r => r.status === 'RESOLVED').length}</div>
-            <div className="hero-stat-label">Selesai Diperbaiki</div>
+            <div className="hero-stat-lbl">Selesai</div>
           </div>
-          <div className="hero-stat">
+          <div>
             <div className="hero-stat-num">{reports.filter(r => r.status === 'PENDING').length}</div>
-            <div className="hero-stat-label">Menunggu Tindakan</div>
+            <div className="hero-stat-lbl">Menunggu</div>
           </div>
         </div>
       </div>
 
       {/* Filter */}
       <div className="filter-bar">
-        <select className="filter-select" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+        <select className="filter-sel" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
           <option value="">Semua Status</option>
           <option value="PENDING">Menunggu</option>
           <option value="IN_PROGRESS">Diproses</option>
           <option value="RESOLVED">Selesai</option>
           <option value="REJECTED">Ditolak</option>
         </select>
-        <select className="filter-select" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
+        <select className="filter-sel" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
           <option value="">Semua Kategori</option>
           {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
       </div>
 
       {/* List */}
-      <div className="section-title">Laporan Terbaru</div>
+      <div className="sec-title">Laporan Terbaru</div>
+
       {reports.length === 0 ? (
-        <div className="empty-state">
+        <div className="empty">
           <div className="empty-icon">📋</div>
-          <p style={{ fontWeight: 600, marginBottom: 8 }}>Belum ada laporan</p>
-          <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Jadilah yang pertama melaporkan kerusakan fasilitas.</p>
+          <p style={{ fontWeight: 600, marginBottom: 6, fontSize: 15 }}>Belum ada laporan</p>
+          <p style={{ color: '#64748b', fontSize: 13 }}>Jadilah yang pertama melaporkan kerusakan.</p>
         </div>
       ) : reports.map(r => (
-        <div key={r.id} className="report-card">
+        <div key={r.id} className="r-card">
           {r.imageUrl
-            ? <img src={r.imageUrl} alt="foto" className="report-img" />
-            : <div className="report-img-placeholder">🔧</div>
+            ? <img src={r.imageUrl} className="r-thumb" alt="foto" />
+            : <div className="r-thumb-ph">🔧</div>
           }
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 600, margin: 0 }}>{r.title}</h3>
-              <span className="status-badge" style={{ background: statusBg[r.status], color: statusColor[r.status] }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 6, marginBottom: 4 }}>
+              <div className="r-title">{r.title}</div>
+              <span className="r-badge" style={{ background: statusBg[r.status], color: statusColor[r.status] }}>
                 {statusLabel[r.status]}
               </span>
             </div>
-            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 6 }}>
-              📍 {r.location} · 📂 {r.category?.name} · 👤 {r.user?.name}
-            </p>
-            <p style={{ fontSize: 14, color: 'var(--text)', margin: 0 }}>
-              {r.description?.length > 100 ? r.description.slice(0, 100) + '...' : r.description}
-            </p>
-            <p style={{ color: 'var(--text-light)', fontSize: 12, marginTop: 8 }}>
-              {new Date(r.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-            </p>
+            <div className="r-meta">📍 {r.location} · {r.category?.name}</div>
+            <div className="r-desc">
+              {r.description?.length > 80 ? r.description.slice(0, 80) + '...' : r.description}
+            </div>
+            <div className="r-date">
+              {r.user?.name} · {new Date(r.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </div>
           </div>
         </div>
       ))}
