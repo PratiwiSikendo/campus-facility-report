@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext';
 
 export default function CreateReport() {
   const [form, setForm] = useState({ title: '', description: '', location: '', categoryId: '' });
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [images, setImages] = useState([]);
+  const [previews, setPreviews] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const { token } = useAuth();
@@ -16,9 +16,21 @@ export default function CreateReport() {
     axios.get(`${import.meta.env.VITE_API_URL}/reports/categories`).then(r => setCategories(r.data));
   }, []);
 
-  const handleImage = (e) => {
-    const file = e.target.files[0];
-    if (file) { setImage(file); setPreview(URL.createObjectURL(file)); }
+  const handleImages = (e) => {
+    const files = Array.from(e.target.files);
+    if (images.length + files.length > 5) {
+      alert('Maksimal hanya bisa mengupload 5 foto.');
+      return;
+    }
+    if (files.length) {
+      setImages(prev => [...prev, ...files]);
+      setPreviews(prev => [...prev, ...files.map(f => URL.createObjectURL(f))]);
+    }
+  };
+
+  const removeImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+    setPreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -26,7 +38,7 @@ export default function CreateReport() {
     setLoading(true);
     const data = new FormData();
     Object.entries(form).forEach(([k, v]) => data.append(k, v));
-    if (image) data.append('image', image);
+    images.forEach(img => data.append('images', img));
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/reports`, data, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
@@ -92,23 +104,26 @@ export default function CreateReport() {
                 style={{ resize: 'vertical' }} />
             </div>
             <div className="form-group">
-              <label className="form-label">Foto Kerusakan (opsional)</label>
-              {preview ? (
-                <div style={{ position: 'relative' }}>
-                  <img src={preview} alt="preview" style={{ width: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 10 }} />
-                  <button type="button" onClick={() => { setImage(null); setPreview(null); }}
-                    style={{ position: 'absolute', top: 8, right: 8, background: '#ef4444', color: 'white', border: 'none', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', fontSize: 12 }}>
-                    Hapus
-                  </button>
-                </div>
-              ) : (
-                <div className="upload-area">
-                  <input type="file" accept="image/*" onChange={handleImage} />
-                  <div style={{ fontSize: 32, marginBottom: 8 }}>📷</div>
-                  <p style={{ fontWeight: 600, marginBottom: 4 }}>Klik atau seret foto ke sini</p>
-                  <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>PNG, JPG, JPEG · Maks. 5MB</p>
+              <label className="form-label">Foto Kerusakan (opsional, bisa lebih dari 1)</label>
+              {previews.length > 0 && (
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
+                  {previews.map((prev, idx) => (
+                    <div key={idx} style={{ position: 'relative' }}>
+                      <img src={prev} alt="preview" style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 10 }} />
+                      <button type="button" onClick={() => removeImage(idx)}
+                        style={{ position: 'absolute', top: 4, right: 4, background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>
+                        ✕
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
+              <div className="upload-area">
+                <input type="file" multiple accept="image/*" onChange={handleImages} />
+                <div style={{ fontSize: 32, marginBottom: 8 }}>📷</div>
+                <p style={{ fontWeight: 600, marginBottom: 4 }}>Klik atau seret foto ke sini</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>Bisa pilih banyak foto. PNG, JPG, JPEG · Maks. 5MB</p>
+              </div>
             </div>
             <button type="submit" className="submit-btn" disabled={loading}>
               {loading ? '⏳ Mengirim...' : '✓ Kirim Laporan'}

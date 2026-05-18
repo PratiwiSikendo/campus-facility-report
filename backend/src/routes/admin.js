@@ -79,3 +79,4 @@ router.post('/categories', authMiddleware, adminOnly, async (req, res) => {
 });
 
 module.exports = router;
+// Trigger nodemon restart for Prisma VALIDATED update

@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const statusColor = { PENDING: '#d97706', IN_PROGRESS: '#2563eb', RESOLVED: '#059669', REJECTED: '#dc2626' };
-const statusBg = { PENDING: '#fef3c7', IN_PROGRESS: '#dbeafe', RESOLVED: '#d1fae5', REJECTED: '#fee2e2' };
-const statusLabel = { PENDING: 'Menunggu', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak' };
+const statusColor = { PENDING: '#f59e0b', VALIDATED: '#d97706', IN_PROGRESS: '#2563eb', RESOLVED: '#059669', REJECTED: '#dc2626' };
+const statusBg = { PENDING: '#fffbeb', VALIDATED: '#fef3c7', IN_PROGRESS: '#dbeafe', RESOLVED: '#d1fae5', REJECTED: '#fee2e2' };
+const statusLabel = { PENDING: 'Validasi Petugas', VALIDATED: 'Menunggu', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak' };
 
 export default function Home() {
   const [reports, setReports] = useState([]);
@@ -131,9 +131,11 @@ export default function Home() {
       {/* Hero — compact untuk mobile */}
       <div className="hero">
         <div className="hero-badge">✦ Sistem Pelaporan Digital</div>
-        <h1>Laporkan Kerusakan<br />Fasilitas Kampus</h1>
-        <p>Pantau status perbaikan secara real-time bersama kami.</p>
-        <Link to="/laporan/buat" className="hero-btn">+ Buat Laporan</Link>
+        <h1>Sistem Pelaporan<br />Fasilitas Kampus</h1>
+        <p>
+          Platform ini memudahkan civitas akademika untuk melaporkan kerusakan fasilitas di lingkungan kampus. 
+          Setiap laporan akan divalidasi oleh petugas sebelum diproses lebih lanjut oleh admin.
+        </p>
         <div className="hero-stats">
           <div>
             <div className="hero-stat-num">{reports.length}</div>
@@ -154,7 +156,8 @@ export default function Home() {
       <div className="filter-bar">
         <select className="filter-sel" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
           <option value="">Semua Status</option>
-          <option value="PENDING">Menunggu</option>
+          <option value="PENDING">Validasi Petugas</option>
+          <option value="VALIDATED">Menunggu Admin</option>
           <option value="IN_PROGRESS">Diproses</option>
           <option value="RESOLVED">Selesai</option>
           <option value="REJECTED">Ditolak</option>
@@ -177,7 +180,7 @@ export default function Home() {
       ) : reports.map(r => (
         <div key={r.id} className="r-card">
           {r.imageUrl
-            ? <img src={r.imageUrl} className="r-thumb" alt="foto" />
+            ? <img src={r.imageUrl.split(',')[0]} className="r-thumb" alt="foto" />
             : <div className="r-thumb-ph">🔧</div>
           }
           <div style={{ flex: 1, minWidth: 0 }}>

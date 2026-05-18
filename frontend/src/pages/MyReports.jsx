@@ -3,9 +3,9 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 
-const statusColor = { PENDING: '#f59e0b', IN_PROGRESS: '#3b82f6', RESOLVED: '#10b981', REJECTED: '#ef4444' };
-const statusBg = { PENDING: '#fffbeb', IN_PROGRESS: '#eff6ff', RESOLVED: '#f0fdf4', REJECTED: '#fef2f2' };
-const statusLabel = { PENDING: 'Menunggu', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak' };
+const statusColor = { PENDING: '#f59e0b', VALIDATED: '#059669', IN_PROGRESS: '#3b82f6', RESOLVED: '#10b981', REJECTED: '#ef4444' };
+const statusBg = { PENDING: '#fffbeb', VALIDATED: '#d1fae5', IN_PROGRESS: '#eff6ff', RESOLVED: '#f0fdf4', REJECTED: '#fef2f2' };
+const statusLabel = { PENDING: 'Validasi Petugas', VALIDATED: 'Menunggu Admin', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak' };
 
 export default function MyReports() {
   const [reports, setReports] = useState([]);
@@ -68,7 +68,13 @@ export default function MyReports() {
               <span><strong>Catatan Admin:</strong> {r.adminNotes}</span>
             </div>
           )}
-          {r.imageUrl && <img src={r.imageUrl} alt="foto" style={{ marginTop: 12, width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8 }} />}
+          {r.imageUrl && (
+            <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {r.imageUrl.split(',').map((img, idx) => (
+                <img key={idx} src={img} alt="foto" style={{ width: '100%', maxWidth: 200, maxHeight: 180, objectFit: 'cover', borderRadius: 8 }} />
+              ))}
+            </div>
+          )}
           <p style={{ color: 'var(--text-light)', fontSize: 12, marginTop: 10 }}>
             {new Date(r.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
           </p>

@@ -45,35 +45,33 @@ router.get('/', async (req, res) => {
 });
 
 // POST buat laporan baru
-router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
+router.post('/', authMiddleware, upload.array('images', 5), async (req, res) => {
   try {
     const { title, description, location, categoryId } = req.body;
-    let imageUrl = null;
+    let imageUrls = [];
 
-    if (req.file) {
-      // Definisikan fileName di sini
-      const ext = req.file.originalname.split('.').pop();
-      const fileName = `${Date.now()}.${ext}`;
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const ext = file.originalname.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
 
-      console.log('Mengupload file:', fileName);
-
-      const { data, error } = await supabase.storage
-        .from('report-images')
-        .upload(fileName, req.file.buffer, {
-          contentType: req.file.mimetype,
-          upsert: false
-        });
-
-      if (error) {
-        console.error('Upload error:', error.message);
-      } else {
-        const { data: urlData } = supabase.storage
+        const { error } = await supabase.storage
           .from('report-images')
-          .getPublicUrl(fileName);
-        imageUrl = urlData.publicUrl;
-        console.log('✅ Image URL:', imageUrl);
+          .upload(fileName, file.buffer, {
+            contentType: file.mimetype,
+            upsert: false
+          });
+
+        if (!error) {
+          const { data: urlData } = supabase.storage
+            .from('report-images')
+            .getPublicUrl(fileName);
+          imageUrls.push(urlData.publicUrl);
+        }
       }
     }
+
+    const imageUrl = imageUrls.length > 0 ? imageUrls.join(',') : null;
 
     const report = await prisma.report.create({
       data: { title, description, location, categoryId, imageUrl, userId: req.user.id }
