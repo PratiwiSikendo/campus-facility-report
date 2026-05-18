@@ -16,18 +16,32 @@ export default function Navbar() {
 
   const isActive = (path) => location.pathname === path;
 
-  const navLinks = user ? [
-    { to: '/', label: 'Beranda', icon: '⌂' },
-    { to: '/laporan/buat', label: 'Buat Laporan', icon: '+' },
-    { to: '/laporan/saya', label: 'Laporan Saya', icon: '◈' },
-    ...(user.role === 'ADMIN' || user.role === 'PETUGAS'
-      ? [{ to: '/admin', label: 'Dashboard Admin', icon: '◉', admin: true }]
-      : []),
-  ] : [
-    { to: '/', label: 'Beranda', icon: '⌂' },
-    { to: '/login', label: 'Masuk', icon: '→' },
-    { to: '/register', label: 'Daftar', icon: '✦' },
-  ];
+  const getNavLinks = () => {
+    if (!user) {
+      return [
+        { to: '/', label: 'Beranda', icon: '⌂' },
+        { to: '/login', label: 'Masuk', icon: '→' },
+        { to: '/register', label: 'Daftar', icon: '✦' },
+      ];
+    }
+    if (user.role === 'ADMIN') {
+      return [
+        { to: '/admin', label: 'Dashboard Admin', icon: '◉', admin: true }
+      ];
+    }
+    if (user.role === 'PETUGAS') {
+      return [
+        { to: '/petugas', label: 'Dashboard Petugas', icon: '◉', admin: true }
+      ];
+    }
+    // Regular user
+    return [
+      { to: '/laporan/buat', label: 'Buat Laporan', icon: '+' },
+      { to: '/laporan/saya', label: 'Laporan Saya', icon: '◈' }
+    ];
+  };
+
+  const navLinks = getNavLinks();
 
   return (
     <>
