@@ -6,7 +6,22 @@ const statusOptions = ['VALIDATED', 'IN_PROGRESS', 'RESOLVED', 'REJECTED'];
 const statusLabel = { VALIDATED: 'Terverifikasi', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak', PENDING: 'Validasi Petugas' };
 const statusColor = { VALIDATED: '#7c3aed', IN_PROGRESS: '#2563eb', RESOLVED: '#059669', REJECTED: '#dc2626', PENDING: '#64748b' };
 const statusBg = { VALIDATED: '#ede9fe', IN_PROGRESS: '#dbeafe', RESOLVED: '#d1fae5', REJECTED: '#fee2e2', PENDING: '#f1f5f9' };
-const statusIcon = { VALIDATED: '🛡️', IN_PROGRESS: '🔧', RESOLVED: '✅', REJECTED: '❌', PENDING: '👀' };
+
+function getStatusIcon(status, size = 14) {
+  if (status === 'VALIDATED') {
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
+  }
+  if (status === 'IN_PROGRESS') {
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>;
+  }
+  if (status === 'RESOLVED') {
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><polyline points="20 6 9 17 4 12"/></svg>;
+  }
+  if (status === 'REJECTED') {
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
+  }
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+}
 
 export default function AdminDashboard() {
   const [reports, setReports] = useState([]);
@@ -69,10 +84,30 @@ export default function AdminDashboard() {
   };
 
   const statCards = [
-    { label: 'Total', val: stats.total, icon: '📋', color: '#2563eb', bg: '#dbeafe', filter: '' },
-    { label: 'Terverifikasi', val: allReports.filter(r => r.status === 'VALIDATED').length, icon: '🛡️', color: '#7c3aed', bg: '#ede9fe', filter: 'VALIDATED' },
-    { label: 'Diproses', val: allReports.filter(r => r.status === 'IN_PROGRESS').length, icon: '🔧', color: '#2563eb', bg: '#dbeafe', filter: 'IN_PROGRESS' },
-    { label: 'Selesai', val: allReports.filter(r => r.status === 'RESOLVED').length, icon: '✅', color: '#059669', bg: '#d1fae5', filter: 'RESOLVED' },
+    { 
+      label: 'Total', 
+      val: stats.total, 
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>, 
+      color: '#2563eb', bg: '#dbeafe', filter: '' 
+    },
+    { 
+      label: 'Terverifikasi', 
+      val: allReports.filter(r => r.status === 'VALIDATED').length, 
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, 
+      color: '#7c3aed', bg: '#ede9fe', filter: 'VALIDATED' 
+    },
+    { 
+      label: 'Diproses', 
+      val: allReports.filter(r => r.status === 'IN_PROGRESS').length, 
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>, 
+      color: '#2563eb', bg: '#dbeafe', filter: 'IN_PROGRESS' 
+    },
+    { 
+      label: 'Selesai', 
+      val: allReports.filter(r => r.status === 'RESOLVED').length, 
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>, 
+      color: '#059669', bg: '#d1fae5', filter: 'RESOLVED' 
+    },
   ];
 
   return (
@@ -187,10 +222,14 @@ export default function AdminDashboard() {
         {/* Tabs */}
         <div className="tab-bar">
           <button className={`tab-btn ${activeTab === 'laporan' ? 'active' : ''}`} onClick={() => setActiveTab('laporan')}>
-            📋 Kelola Laporan
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Kelola Laporan
+            </span>
           </button>
           <button className={`tab-btn ${activeTab === 'kategori' ? 'active' : ''}`} onClick={() => setActiveTab('kategori')}>
-            📂 Kelola Kategori
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Kelola Kategori
+            </span>
           </button>
         </div>
 
@@ -232,8 +271,8 @@ export default function AdminDashboard() {
                 <div className="r-header" onClick={() => setExpandedId(expandedId === r.id ? null : r.id)}>
                   <div className="r-status-dot" style={{ background: statusColor[r.status] }} />
                   <div className="r-title">{r.title}</div>
-                  <span className="r-badge" style={{ background: statusBg[r.status], color: statusColor[r.status] }}>
-                    {statusIcon[r.status]} {statusLabel[r.status]}
+                  <span className="r-badge" style={{ background: statusBg[r.status], color: statusColor[r.status], display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    {getStatusIcon(r.status, 12)} {statusLabel[r.status]}
                   </span>
                   <span className={`r-chevron ${expandedId === r.id ? 'open' : ''}`}>▼</span>
                 </div>
@@ -241,9 +280,15 @@ export default function AdminDashboard() {
                 {/* Info singkat */}
                 {expandedId !== r.id && (
                   <div style={{ padding: '0 16px 14px', display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 12, color: '#64748b' }}>👤 {r.user?.name}</span>
-                    <span style={{ fontSize: 12, color: '#64748b' }}>📍 {r.location}</span>
-                    <span style={{ fontSize: 12, color: '#64748b' }}>📂 {r.category?.name}</span>
+                    <span style={{ fontSize: 12, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> {r.user?.name}
+                    </span>
+                    <span style={{ fontSize: 12, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {r.location}
+                    </span>
+                    <span style={{ fontSize: 12, color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> {r.category?.name}
+                    </span>
                     <span style={{ fontSize: 12, color: '#94a3b8' }}>
                       {new Date(r.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </span>
@@ -295,8 +340,8 @@ export default function AdminDashboard() {
                       )}
 
                       {r.adminNotes && (
-                        <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: '#92400e' }}>
-                          📝 <strong>Catatan sebelumnya:</strong> {r.adminNotes}
+                        <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: '#92400e', display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> <strong>Catatan sebelumnya:</strong> {r.adminNotes}
                         </div>
                       )}
                     </div>
@@ -311,7 +356,7 @@ export default function AdminDashboard() {
                           value={reports.find(x => x.id === r.id)?.status || r.status}
                           onChange={e => setReports(prev => prev.map(x => x.id === r.id ? { ...x, status: e.target.value } : x))}>
                           {statusOptions.map(s => (
-                            <option key={s} value={s}>{statusIcon[s]} {statusLabel[s]}</option>
+                            <option key={s} value={s}>{statusLabel[s]}</option>
                           ))}
                         </select>
                       </div>

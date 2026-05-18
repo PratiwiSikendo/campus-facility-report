@@ -120,13 +120,23 @@ export default function CreateReport() {
               )}
               <div className="upload-area">
                 <input type="file" multiple accept="image/*" onChange={handleImages} />
-                <div style={{ fontSize: 32, marginBottom: 8 }}>📷</div>
+                <div style={{ marginBottom: 8, color: '#3b82f6' }}>
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto' }}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </div>
                 <p style={{ fontWeight: 600, marginBottom: 4 }}>Klik atau seret foto ke sini</p>
                 <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>Bisa pilih banyak foto. PNG, JPG, JPEG · Maks. 5MB</p>
               </div>
             </div>
-            <button type="submit" className="submit-btn" disabled={loading}>
-              {loading ? '⏳ Mengirim...' : '✓ Kirim Laporan'}
+            <button type="submit" className="submit-btn" disabled={loading} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              {loading ? (
+                <>
+                  <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ animation: 'spin 1s linear infinite' }}><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg> Mengirim...
+                </>
+              ) : (
+                <>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg> Kirim Laporan
+                </>
+              )}
             </button>
           </form>
         </div>

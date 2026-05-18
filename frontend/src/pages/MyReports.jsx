@@ -7,6 +7,22 @@ const statusColor = { PENDING: '#f59e0b', VALIDATED: '#7c3aed', IN_PROGRESS: '#3
 const statusBg = { PENDING: '#fffbeb', VALIDATED: '#ede9fe', IN_PROGRESS: '#eff6ff', RESOLVED: '#f0fdf4', REJECTED: '#fef2f2' };
 const statusLabel = { PENDING: 'Validasi Petugas', VALIDATED: 'Terverifikasi', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak' };
 
+function getStatusIcon(status, size = 14) {
+  if (status === 'VALIDATED') {
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
+  }
+  if (status === 'IN_PROGRESS') {
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>;
+  }
+  if (status === 'RESOLVED') {
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><polyline points="20 6 9 17 4 12"/></svg>;
+  }
+  if (status === 'REJECTED') {
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
+  }
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+}
+
 export default function MyReports() {
   const [reports, setReports] = useState([]);
   const [activeTab, setActiveTab] = useState('aktif');
@@ -53,25 +69,29 @@ export default function MyReports() {
           <h2 className="page-title">Laporan Saya</h2>
           <p className="page-subtitle">Pantau status laporan fasilitas kampus Anda</p>
         </div>
-        <Link to="/laporan/buat" className="new-btn">✨ Buat Laporan Baru</Link>
+        <Link to="/laporan/buat" className="new-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 6 }}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Buat Laporan Baru
+        </Link>
       </div>
 
       <div className="tab-container">
         <button 
           className={`tab-btn ${activeTab === 'aktif' ? 'active' : ''}`} 
           onClick={() => setActiveTab('aktif')}>
-          🚀 Berjalan <span className="tab-badge">{reports.filter(r => ['PENDING', 'VALIDATED', 'IN_PROGRESS'].includes(r.status)).length}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 6 }}><polygon points="5 3 19 12 5 21 5 3"/></svg> Berjalan <span className="tab-badge">{reports.filter(r => ['PENDING', 'VALIDATED', 'IN_PROGRESS'].includes(r.status)).length}</span>
         </button>
         <button 
           className={`tab-btn ${activeTab === 'riwayat' ? 'active' : ''}`} 
           onClick={() => setActiveTab('riwayat')}>
-          📁 Riwayat <span className="tab-badge">{reports.filter(r => ['RESOLVED', 'REJECTED'].includes(r.status)).length}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 6 }}><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Riwayat <span className="tab-badge">{reports.filter(r => ['RESOLVED', 'REJECTED'].includes(r.status)).length}</span>
         </button>
       </div>
 
       {reports.filter(r => activeTab === 'aktif' ? ['PENDING', 'VALIDATED', 'IN_PROGRESS'].includes(r.status) : ['RESOLVED', 'REJECTED'].includes(r.status)).length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📋</div>
+          <div className="empty-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+          </div>
           <p style={{ fontWeight: 700, fontSize: 16, marginBottom: 8, color: '#0f172a' }}>Belum ada laporan {activeTab === 'aktif' ? 'aktif' : 'di riwayat'}</p>
           <p style={{ color: '#64748b', fontSize: 14, marginBottom: 20 }}>{activeTab === 'aktif' ? 'Semua laporan Anda sudah diproses atau Anda belum membuat laporan baru.' : 'Laporan yang telah selesai atau ditolak akan muncul di sini.'}</p>
           {activeTab === 'aktif' && <Link to="/laporan/buat" className="new-btn">+ Mulai Lapor Pertama</Link>}
@@ -82,19 +102,23 @@ export default function MyReports() {
             <div style={{ flex: 1 }}>
               <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8, color: '#0f172a' }}>{r.title}</h3>
               <p style={{ color: '#64748b', fontSize: 13, marginBottom: 12, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>📍 {r.location}</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {r.location}
+                </span>
                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#cbd5e1' }} />
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>📂 {r.category?.name}</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> {r.category?.name}
+                </span>
               </p>
               <p style={{ fontSize: 14, color: '#334155', lineHeight: 1.6 }}>{r.description}</p>
             </div>
-            <span className="status-badge" style={{ background: statusBg[r.status], color: statusColor[r.status], flexShrink: 0 }}>
-              {statusLabel[r.status]}
+            <span className="status-badge" style={{ background: statusBg[r.status], color: statusColor[r.status], flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              {getStatusIcon(r.status, 12)} {statusLabel[r.status]}
             </span>
           </div>
           {r.adminNotes && (
             <div className="admin-note">
-              <span style={{ fontSize: 20 }}>📝</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0, marginTop: 2 }}><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
               <span><strong style={{ display: 'block', marginBottom: 2 }}>Catatan Admin:</strong> {r.adminNotes}</span>
             </div>
           )}
