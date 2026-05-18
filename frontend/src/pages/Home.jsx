@@ -5,6 +5,7 @@ import axios from 'axios';
 const statusColor = { PENDING: '#f59e0b', VALIDATED: '#7c3aed', IN_PROGRESS: '#2563eb', RESOLVED: '#059669', REJECTED: '#dc2626' };
 const statusBg = { PENDING: '#fffbeb', VALIDATED: '#ede9fe', IN_PROGRESS: '#dbeafe', RESOLVED: '#d1fae5', REJECTED: '#fee2e2' };
 const statusLabel = { PENDING: 'Validasi Petugas', VALIDATED: 'Terverifikasi', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak' };
+const statusIcon = { PENDING: '⏳', VALIDATED: '🛡️', IN_PROGRESS: '🔧', RESOLVED: '✅', REJECTED: '❌' };
 
 export default function Home() {
   const [reports, setReports] = useState([]);
@@ -24,182 +25,500 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 16px 60px' }}>
+    <div className="home-container">
       <style>{`
-        /* HERO */
-        .hero {
-          background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 60%, #0ea5e9 100%);
-          border-radius: 20px; padding: 24px 20px;
-          margin: 16px 0 20px; position: relative; overflow: hidden;
-          box-shadow: 0 8px 32px rgba(37,99,235,0.25);
-        }
-        .hero::before {
-          content: ''; position: absolute; top: -30px; right: -30px;
-          width: 120px; height: 120px; border-radius: 50%;
-          background: rgba(255,255,255,0.07);
-        }
-        .hero::after {
-          content: ''; position: absolute; bottom: -40px; right: 40px;
-          width: 160px; height: 160px; border-radius: 50%;
-          background: rgba(255,255,255,0.05);
-        }
-        .hero-badge {
-          display: inline-flex; align-items: center; gap: 5px;
-          background: rgba(255,255,255,0.15); color: white;
-          padding: 4px 10px; border-radius: 20px; font-size: 11px;
-          font-weight: 600; margin-bottom: 10px;
-          border: 1px solid rgba(255,255,255,0.2);
-        }
-        .hero h1 {
-          color: white; font-size: 20px; font-weight: 700;
-          margin-bottom: 8px; line-height: 1.3;
-        }
-        .hero p {
-          color: rgba(255,255,255,0.82); font-size: 13px;
-          margin-bottom: 16px; line-height: 1.5; max-width: 320px;
-        }
-        .hero-btn {
-          display: inline-flex; align-items: center; gap: 6px;
-          background: white; color: #1d4ed8;
-          padding: 9px 18px; border-radius: 8px;
-          text-decoration: none; font-weight: 700; font-size: 13px;
-          box-shadow: 0 3px 10px rgba(0,0,0,0.15); transition: all 0.2s;
-        }
-        .hero-btn:hover { transform: translateY(-1px); }
-        .hero-stats {
-          display: flex; gap: 20px; margin-top: 18px; flex-wrap: wrap;
-        }
-        .hero-stat-num { color: white; font-size: 20px; font-weight: 800; line-height: 1; }
-        .hero-stat-lbl { color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 2px; }
-
-        /* FILTER */
-        .filter-bar { display: flex; gap: 10px; margin-bottom: 16px; }
-        .filter-sel {
-          flex: 1; padding: 9px 12px; border: 1.5px solid #e2eaf6;
-          border-radius: 10px; background: white; font-size: 13px;
-          box-shadow: 0 1px 4px rgba(59,130,246,0.08);
-          appearance: none; cursor: pointer; color: #0f172a;
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap');
+        
+        .home-container {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          background: radial-gradient(circle at 10% 20%, rgba(240, 247, 255, 0.8) 0%, rgba(255, 255, 255, 0.9) 90%);
+          min-height: 100vh;
+          padding: 0 16px 80px;
+          max-width: 1100px;
+          margin: 0 auto;
         }
 
-        /* SECTION TITLE */
-        .sec-title {
-          font-size: 16px; font-weight: 700; margin-bottom: 12px;
-          color: #0f172a; display: flex; align-items: center; gap: 8px;
+        /* HERO SECTION */
+        .hero-section {
+          position: relative;
+          padding: 60px 40px;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          border-radius: 32px;
+          color: white;
+          overflow: hidden;
+          margin: 24px 0 40px;
+          box-shadow: 0 20px 50px -15px rgba(15, 23, 42, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .sec-title::after { content: ''; flex: 1; height: 1px; background: #e2eaf6; }
 
-        /* REPORT CARD */
-        .r-card {
-          background: white; border-radius: 14px;
-          border: 1.5px solid #e2eaf6; padding: 14px;
-          margin-bottom: 10px; display: flex; gap: 12px;
-          box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+        .hero-section::before {
+          content: '';
+          position: absolute;
+          top: -20%;
+          right: -10%;
+          width: 400px;
+          height: 400px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+          filter: blur(40px);
+        }
+
+        .hero-section::after {
+          content: '';
+          position: absolute;
+          bottom: -30%;
+          left: -10%;
+          width: 350px;
+          height: 350px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+          filter: blur(45px);
+        }
+
+        .hero-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 16px;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 30px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #93c5fd;
+          margin-bottom: 24px;
+          backdrop-filter: blur(8px);
+        }
+
+        .hero-title {
+          font-family: 'Outfit', sans-serif;
+          font-size: 42px;
+          font-weight: 800;
+          line-height: 1.2;
+          letter-spacing: -1px;
+          margin-bottom: 16px;
+          background: linear-gradient(135deg, #ffffff 40%, #bfdbfe 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+          font-size: 16px;
+          color: #94a3b8;
+          line-height: 1.6;
+          max-width: 580px;
+          margin-bottom: 32px;
+        }
+
+        /* HERO STATS */
+        .stats-container {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 20px;
+          padding: 20px;
+          max-width: 550px;
+          backdrop-filter: blur(10px);
+        }
+
+        .stat-item {
+          text-align: left;
+        }
+
+        .stat-num {
+          font-family: 'Outfit', sans-serif;
+          font-size: 28px;
+          font-weight: 800;
+          color: #ffffff;
+          line-height: 1;
+          margin-bottom: 6px;
+          background: linear-gradient(135deg, #ffffff, #60a5fa);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+          font-size: 12px;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          font-weight: 700;
+        }
+
+        /* WORKFLOW CARDS */
+        .section-title {
+          font-family: 'Outfit', sans-serif;
+          font-size: 24px;
+          font-weight: 800;
+          color: #0f172a;
+          margin-bottom: 24px;
+          text-align: center;
+          position: relative;
+        }
+
+        .section-title::after {
+          content: '';
+          display: block;
+          width: 40px;
+          height: 4px;
+          background: linear-gradient(135deg, #2563eb, #7c3aed);
+          border-radius: 2px;
+          margin: 8px auto 0;
+        }
+
+        .workflow-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 20px;
+          margin-bottom: 48px;
+        }
+
+        .work-card {
+          background: rgba(255, 255, 255, 0.7);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.8);
+          border-radius: 20px;
+          padding: 24px;
+          text-align: center;
+          box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .work-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.1);
+          border-color: rgba(37, 99, 235, 0.2);
+          background: white;
+        }
+
+        .work-icon-box {
+          width: 54px;
+          height: 54px;
+          border-radius: 16px;
+          background: #eff6ff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 24px;
+          margin: 0 auto 16px;
+          box-shadow: 0 4px 10px rgba(37, 99, 235, 0.05);
+        }
+
+        .work-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #1e293b;
+          margin-bottom: 8px;
+        }
+
+        .work-desc {
+          font-size: 13px;
+          color: #64748b;
+          line-height: 1.5;
+        }
+
+        /* EXPLORE SECTION */
+        .explore-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 24px;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+
+        .explore-title {
+          font-family: 'Outfit', sans-serif;
+          font-size: 24px;
+          font-weight: 800;
+          color: #0f172a;
+        }
+
+        /* FILTERS */
+        .filter-wrapper {
+          display: flex;
+          gap: 12px;
+        }
+
+        .filter-select {
+          padding: 10px 18px;
+          border: 1px solid rgba(226, 234, 246, 0.8);
+          border-radius: 14px;
+          background: white;
+          font-size: 14px;
+          font-weight: 600;
+          color: #334155;
+          outline: none;
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.03);
+          cursor: pointer;
           transition: all 0.2s;
         }
-        .r-card:hover { box-shadow: 0 4px 16px rgba(59,130,246,0.14); transform: translateY(-1px); border-color: #bfdbfe; }
-        .r-thumb {
-          width: 72px; height: 60px; border-radius: 8px;
-          object-fit: cover; flex-shrink: 0;
-        }
-        .r-thumb-ph {
-          width: 72px; height: 60px; border-radius: 8px;
-          background: #eff6ff; display: flex; align-items: center;
-          justify-content: center; font-size: 20px; flex-shrink: 0;
-        }
-        .r-badge {
-          padding: 3px 9px; border-radius: 20px;
-          font-size: 11px; font-weight: 600; white-space: nowrap;
-        }
-        .r-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
-        .r-meta { color: #64748b; font-size: 12px; margin-bottom: 5px; }
-        .r-desc { font-size: 13px; color: #374151; line-height: 1.4; }
-        .r-date { color: #94a3b8; font-size: 11px; margin-top: 6px; }
 
-        /* EMPTY */
-        .empty {
-          text-align: center; padding: 48px 20px;
-          background: white; border-radius: 14px;
-          border: 2px dashed #e2eaf6;
+        .filter-select:focus {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-        .empty-icon {
-          width: 52px; height: 52px; border-radius: 14px;
-          background: #eff6ff; display: flex; align-items: center;
-          justify-content: center; font-size: 22px; margin: 0 auto 12px;
+
+        /* REPORT CARDS */
+        .report-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+          gap: 20px;
+        }
+
+        .report-item-card {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.9);
+          border-radius: 24px;
+          overflow: hidden;
+          box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex;
+          flex-direction: column;
+        }
+
+        .report-item-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.12);
+          background: white;
+          border-color: rgba(37, 99, 235, 0.2);
+        }
+
+        .card-img-wrapper {
+          position: relative;
+          height: 180px;
+          width: 100%;
+          overflow: hidden;
+          background: #f1f5f9;
+        }
+
+        .card-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s;
+        }
+
+        .report-item-card:hover .card-image {
+          transform: scale(1.05);
+        }
+
+        .card-placeholder-icon {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 40px;
+          background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        }
+
+        .card-badge {
+          position: absolute;
+          top: 14px;
+          right: 14px;
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-size: 11px;
+          font-weight: 800;
+          color: white;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+          backdrop-filter: blur(4px);
+        }
+
+        .card-body {
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+
+        .card-meta {
+          font-size: 12px;
+          color: #94a3b8;
+          font-weight: 600;
+          margin-bottom: 8px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .card-title {
+          font-size: 17px;
+          font-weight: 700;
+          color: #0f172a;
+          margin-bottom: 10px;
+          line-height: 1.3;
+        }
+
+        .card-desc {
+          font-size: 14px;
+          color: #475569;
+          line-height: 1.5;
+          margin-bottom: 16px;
+          flex: 1;
+        }
+
+        .card-footer {
+          border-top: 1px solid rgba(226, 234, 246, 0.5);
+          padding-top: 14px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 12px;
+          color: #64748b;
+          font-weight: 600;
+        }
+
+        /* EMPTY STATE */
+        .empty-box {
+          grid-column: 1 / -1;
+          text-align: center;
+          padding: 60px 20px;
+          background: rgba(255, 255, 255, 0.5);
+          border-radius: 24px;
+          border: 2px dashed rgba(226, 234, 246, 0.8);
+        }
+
+        @media (max-width: 640px) {
+          .hero-section {
+            padding: 40px 24px;
+            text-align: center;
+          }
+          .hero-title {
+            font-size: 32px;
+          }
+          .hero-desc {
+            font-size: 14px;
+            margin: 0 auto 24px;
+          }
+          .stats-container {
+            grid-template-columns: 1fr;
+            margin: 0 auto;
+          }
+          .explore-header {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .filter-wrapper {
+            width: 100%;
+          }
+          .filter-select {
+            flex: 1;
+          }
         }
       `}</style>
 
-      {/* Hero — compact untuk mobile */}
-      <div className="hero">
-        <div className="hero-badge">✦ Sistem Pelaporan Digital</div>
-        <h1>Sistem Pelaporan<br />Fasilitas Kampus</h1>
-        <p>
-          Platform ini memudahkan civitas akademika untuk melaporkan kerusakan fasilitas di lingkungan kampus. 
-          Setiap laporan akan divalidasi oleh petugas sebelum diproses lebih lanjut oleh admin.
+      {/* HERO BANNER - CINEMATIC MODERN */}
+      <div className="hero-section">
+        <div className="hero-tag">✦ Layanan Pengaduan Fasilitas Kampus</div>
+        <h1 className="hero-title">Wujudkan Kampus Nyaman & Aman Bersama</h1>
+        <p className="hero-desc">
+          Platform pelaporan digital interaktif yang menghubungkan civitas akademika, petugas lapangan, dan tim administrasi secara real-time untuk penanganan fasilitas yang cepat, transparan, dan terstruktur.
         </p>
-        <div className="hero-stats">
-          <div>
-            <div className="hero-stat-num">{reports.length}</div>
-            <div className="hero-stat-lbl">Total Laporan</div>
+        
+        <div className="stats-container">
+          <div className="stat-item">
+            <div className="stat-num">{reports.length}</div>
+            <div className="stat-label">Laporan Masuk</div>
           </div>
-          <div>
-            <div className="hero-stat-num">{reports.filter(r => r.status === 'RESOLVED').length}</div>
-            <div className="hero-stat-lbl">Selesai</div>
+          <div className="stat-item">
+            <div className="stat-num">{reports.filter(r => r.status === 'RESOLVED').length}</div>
+            <div className="stat-label">Selesai Diperbaiki</div>
           </div>
-          <div>
-            <div className="hero-stat-num">{reports.filter(r => r.status === 'PENDING').length}</div>
-            <div className="hero-stat-lbl">Menunggu</div>
+          <div className="stat-item">
+            <div className="stat-num">{reports.filter(r => ['PENDING', 'VALIDATED', 'IN_PROGRESS'].includes(r.status)).length}</div>
+            <div className="stat-label">Sedang Diproses</div>
           </div>
         </div>
       </div>
 
-      {/* Filter */}
-      <div className="filter-bar">
-        <select className="filter-sel" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
-          <option value="">Semua Status</option>
-          <option value="PENDING">Validasi Petugas</option>
-          <option value="VALIDATED">Terverifikasi</option>
-          <option value="IN_PROGRESS">Diproses</option>
-          <option value="RESOLVED">Selesai</option>
-          <option value="REJECTED">Ditolak</option>
-        </select>
-        <select className="filter-sel" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
-          <option value="">Semua Kategori</option>
-          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
+      {/* CARA KERJA SISTEM */}
+      <h2 className="section-title">Alur Proses Transparan</h2>
+      <div className="workflow-grid">
+        <div className="work-card">
+          <div className="work-icon-box" style={{ background: '#fef3c7', color: '#d97706' }}>📝</div>
+          <h3 className="work-title">1. Buat Laporan</h3>
+          <p className="work-desc">Unggah detail kerusakan fasilitas beserta dokumentasi foto melalui akun Anda.</p>
+        </div>
+        <div className="work-card">
+          <div className="work-icon-box" style={{ background: '#ede9fe', color: '#7c3aed' }}>🛡️</div>
+          <h3 className="work-title">2. Verifikasi Petugas</h3>
+          <p className="work-desc">Petugas mengecek validitas lokasi dan kelayakan foto kerusakan secara langsung.</p>
+        </div>
+        <div className="work-card">
+          <div className="work-icon-box" style={{ background: '#dbeafe', color: '#2563eb' }}>🔧</div>
+          <h3 className="work-title">3. Tindakan Admin</h3>
+          <p className="work-desc">Tim administrasi menunjuk teknisi dan mengalokasikan sumber daya untuk perbaikan.</p>
+        </div>
+        <div className="work-card">
+          <div className="work-icon-box" style={{ background: '#d1fae5', color: '#059669' }}>✅</div>
+          <h3 className="work-title">4. Selesai</h3>
+          <p className="work-desc">Fasilitas selesai diperbaiki dan siap digunakan kembali demi kenyamanan bersama.</p>
+        </div>
       </div>
 
-      {/* List */}
-      <div className="sec-title">Laporan Terbaru</div>
-
-      {reports.length === 0 ? (
-        <div className="empty">
-          <div className="empty-icon">📋</div>
-          <p style={{ fontWeight: 600, marginBottom: 6, fontSize: 15 }}>Belum ada laporan</p>
-          <p style={{ color: '#64748b', fontSize: 13 }}>Jadilah yang pertama melaporkan kerusakan.</p>
+      {/* EXPLORE REPORTS */}
+      <div className="explore-header">
+        <h2 className="explore-title">Laporan Terbaru Civitas</h2>
+        <div className="filter-wrapper">
+          <select className="filter-select" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+            <option value="">Semua Status</option>
+            <option value="PENDING">Validasi Petugas</option>
+            <option value="VALIDATED">Terverifikasi</option>
+            <option value="IN_PROGRESS">Diproses</option>
+            <option value="RESOLVED">Selesai</option>
+            <option value="REJECTED">Ditolak</option>
+          </select>
+          <select className="filter-select" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
+            <option value="">Semua Kategori</option>
+            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
         </div>
-      ) : reports.map(r => (
-        <div key={r.id} className="r-card">
-          {r.imageUrl
-            ? <img src={r.imageUrl.split(',')[0]} className="r-thumb" alt="foto" />
-            : <div className="r-thumb-ph">🔧</div>
-          }
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 6, marginBottom: 4 }}>
-              <div className="r-title">{r.title}</div>
-              <span className="r-badge" style={{ background: statusBg[r.status], color: statusColor[r.status] }}>
-                {statusLabel[r.status]}
+      </div>
+
+      <div className="report-grid">
+        {reports.length === 0 ? (
+          <div className="empty-box">
+            <div style={{ fontSize: 44, marginBottom: 12 }}>📋</div>
+            <p style={{ fontWeight: 700, fontSize: 16, marginBottom: 4, color: '#1e293b' }}>Tidak Ada Laporan</p>
+            <p style={{ color: '#64748b', fontSize: 13 }}>Tidak ada laporan yang sesuai dengan kriteria penyaringan Anda.</p>
+          </div>
+        ) : reports.map(r => (
+          <div key={r.id} className="report-item-card">
+            <div className="card-img-wrapper">
+              {r.imageUrl ? (
+                <img src={r.imageUrl.split(',')[0]} className="card-image" alt="Foto Fasilitas" />
+              ) : (
+                <div className="card-placeholder-icon">🔧</div>
+              )}
+              <span className="card-badge" style={{ background: statusColor[r.status] }}>
+                {statusIcon[r.status]} {statusLabel[r.status]}
               </span>
             </div>
-            <div className="r-meta">📍 {r.location} · {r.category?.name}</div>
-            <div className="r-desc">
-              {r.description?.length > 80 ? r.description.slice(0, 80) + '...' : r.description}
-            </div>
-            <div className="r-date">
-              {r.user?.name} · {new Date(r.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+            
+            <div className="card-body">
+              <div className="card-meta">
+                <span>📍 {r.location}</span>
+                <span style={{ color: '#cbd5e1' }}>•</span>
+                <span>📂 {r.category?.name}</span>
+              </div>
+              <h3 className="card-title">{r.title}</h3>
+              <p className="card-desc">
+                {r.description?.length > 90 ? r.description.slice(0, 90) + '...' : r.description}
+              </p>
+              
+              <div className="card-footer">
+                <span>👤 {r.user?.name}</span>
+                <span>{new Date(r.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
