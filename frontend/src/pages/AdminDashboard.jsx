@@ -3,10 +3,10 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
 const statusOptions = ['VALIDATED', 'IN_PROGRESS', 'RESOLVED', 'REJECTED'];
-const statusLabel = { VALIDATED: 'Menunggu', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak', PENDING: 'Validasi Petugas' };
-const statusColor = { VALIDATED: '#d97706', IN_PROGRESS: '#2563eb', RESOLVED: '#059669', REJECTED: '#dc2626', PENDING: '#64748b' };
-const statusBg = { VALIDATED: '#fef3c7', IN_PROGRESS: '#dbeafe', RESOLVED: '#d1fae5', REJECTED: '#fee2e2', PENDING: '#f1f5f9' };
-const statusIcon = { VALIDATED: '⏳', IN_PROGRESS: '🔧', RESOLVED: '✅', REJECTED: '❌', PENDING: '👀' };
+const statusLabel = { VALIDATED: 'Terverifikasi', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak', PENDING: 'Validasi Petugas' };
+const statusColor = { VALIDATED: '#7c3aed', IN_PROGRESS: '#2563eb', RESOLVED: '#059669', REJECTED: '#dc2626', PENDING: '#64748b' };
+const statusBg = { VALIDATED: '#ede9fe', IN_PROGRESS: '#dbeafe', RESOLVED: '#d1fae5', REJECTED: '#fee2e2', PENDING: '#f1f5f9' };
+const statusIcon = { VALIDATED: '🛡️', IN_PROGRESS: '🔧', RESOLVED: '✅', REJECTED: '❌', PENDING: '👀' };
 
 export default function AdminDashboard() {
   const [reports, setReports] = useState([]);
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
 
   const statCards = [
     { label: 'Total', val: stats.total, icon: '📋', color: '#2563eb', bg: '#dbeafe', filter: '' },
-    { label: 'Menunggu', val: allReports.filter(r => r.status === 'VALIDATED').length, icon: '⏳', color: '#d97706', bg: '#fef3c7', filter: 'VALIDATED' },
+    { label: 'Terverifikasi', val: allReports.filter(r => r.status === 'VALIDATED').length, icon: '🛡️', color: '#7c3aed', bg: '#ede9fe', filter: 'VALIDATED' },
     { label: 'Diproses', val: allReports.filter(r => r.status === 'IN_PROGRESS').length, icon: '🔧', color: '#2563eb', bg: '#dbeafe', filter: 'IN_PROGRESS' },
     { label: 'Selesai', val: allReports.filter(r => r.status === 'RESOLVED').length, icon: '✅', color: '#059669', bg: '#d1fae5', filter: 'RESOLVED' },
   ];
@@ -194,7 +194,7 @@ export default function AdminDashboard() {
             {/* Filter Chips */}
             <div className="chips">
               {[['', 'Semua', `${allReports.filter(r => r.status !== 'PENDING').length}`],
-                ['VALIDATED', 'Menunggu', `${allReports.filter(r => r.status === 'VALIDATED').length}`],
+                ['VALIDATED', 'Terverifikasi', `${allReports.filter(r => r.status === 'VALIDATED').length}`],
                 ['IN_PROGRESS', 'Diproses', `${allReports.filter(r => r.status === 'IN_PROGRESS').length}`],
                 ['RESOLVED', 'Selesai', `${allReports.filter(r => r.status === 'RESOLVED').length}`],
                 ['REJECTED', 'Ditolak', `${allReports.filter(r => r.status === 'REJECTED').length}`]

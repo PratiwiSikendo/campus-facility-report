@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
-const statusLabel = { PENDING: 'Menunggu Validasi', VALIDATED: 'Tervalidasi', REJECTED: 'Ditolak' };
-const statusColor = { PENDING: '#d97706', VALIDATED: '#059669', REJECTED: '#dc2626' };
-const statusBg = { PENDING: '#fef3c7', VALIDATED: '#d1fae5', REJECTED: '#fee2e2' };
-const statusIcon = { PENDING: '⏳', VALIDATED: '✅', REJECTED: '❌' };
+const statusLabel = { PENDING: 'Menunggu Validasi', VALIDATED: 'Terverifikasi', REJECTED: 'Ditolak' };
+const statusColor = { PENDING: '#d97706', VALIDATED: '#7c3aed', REJECTED: '#dc2626' };
+const statusBg = { PENDING: '#fef3c7', VALIDATED: '#ede9fe', REJECTED: '#fee2e2' };
+const statusIcon = { PENDING: '⏳', VALIDATED: '🛡️', REJECTED: '❌' };
 
 export default function PetugasDashboard() {
   const [reports, setReports] = useState([]);
@@ -39,8 +39,8 @@ export default function PetugasDashboard() {
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 16px 80px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Dashboard Petugas</h2>
-        <p style={{ color: '#64748b', fontSize: 14 }}>Validasi kelayakan gambar dan detail laporan sebelum diteruskan ke Admin</p>
+        <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Validasi Laporan (Petugas)</h2>
+        <p style={{ color: '#64748b', fontSize: 14 }}>Periksa keaslian foto dan detail laporan sebelum diteruskan ke tahap pengerjaan (Admin).</p>
       </div>
 
       <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
@@ -96,13 +96,13 @@ export default function PetugasDashboard() {
                     disabled={saving[r.id]}
                     onClick={() => updateStatus(r.id, 'REJECTED')}
                     style={{ flex: 1, padding: 12, background: '#fee2e2', color: '#dc2626', border: '1px solid #f87171', borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
-                    {saving[r.id] ? '⏳...' : '❌ Tidak Layak (Tolak)'}
+                    {saving[r.id] ? '⏳...' : '❌ Tolak Laporan (Tidak Valid)'}
                   </button>
                   <button 
                     disabled={saving[r.id]}
                     onClick={() => updateStatus(r.id, 'VALIDATED')}
-                    style={{ flex: 1, padding: 12, background: '#d1fae5', color: '#059669', border: '1px solid #34d399', borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
-                    {saving[r.id] ? '⏳...' : '✅ Layak (Teruskan ke Admin)'}
+                    style={{ flex: 1, padding: 12, background: '#ede9fe', color: '#7c3aed', border: '1px solid #c4b5fd', borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+                    {saving[r.id] ? '⏳...' : '🛡️ Verifikasi (Teruskan ke Admin)'}
                   </button>
                 </div>
               </div>

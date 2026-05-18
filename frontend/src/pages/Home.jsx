@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const statusColor = { PENDING: '#f59e0b', VALIDATED: '#d97706', IN_PROGRESS: '#2563eb', RESOLVED: '#059669', REJECTED: '#dc2626' };
-const statusBg = { PENDING: '#fffbeb', VALIDATED: '#fef3c7', IN_PROGRESS: '#dbeafe', RESOLVED: '#d1fae5', REJECTED: '#fee2e2' };
-const statusLabel = { PENDING: 'Validasi Petugas', VALIDATED: 'Menunggu', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak' };
+const statusColor = { PENDING: '#f59e0b', VALIDATED: '#7c3aed', IN_PROGRESS: '#2563eb', RESOLVED: '#059669', REJECTED: '#dc2626' };
+const statusBg = { PENDING: '#fffbeb', VALIDATED: '#ede9fe', IN_PROGRESS: '#dbeafe', RESOLVED: '#d1fae5', REJECTED: '#fee2e2' };
+const statusLabel = { PENDING: 'Validasi Petugas', VALIDATED: 'Terverifikasi', IN_PROGRESS: 'Diproses', RESOLVED: 'Selesai', REJECTED: 'Ditolak' };
 
 export default function Home() {
   const [reports, setReports] = useState([]);
@@ -157,7 +157,7 @@ export default function Home() {
         <select className="filter-sel" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
           <option value="">Semua Status</option>
           <option value="PENDING">Validasi Petugas</option>
-          <option value="VALIDATED">Menunggu Admin</option>
+          <option value="VALIDATED">Terverifikasi</option>
           <option value="IN_PROGRESS">Diproses</option>
           <option value="RESOLVED">Selesai</option>
           <option value="REJECTED">Ditolak</option>
