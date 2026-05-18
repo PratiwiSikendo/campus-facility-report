@@ -31,14 +31,14 @@ export default function AdminDashboard() {
   const fetchAll = () => {
     axios.get(`${import.meta.env.VITE_API_URL}/admin/reports`, { headers }).then(r => {
       setAllReports(r.data);
-      setReports(r.data);
+      setReports(r.data.filter(x => ['VALIDATED', 'IN_PROGRESS'].includes(x.status)));
     });
   };
 
   const handleFilter = (status) => {
     setFilterStatus(status);
     setExpandedId(null);
-    if (!status) setReports(allReports.filter(r => r.status !== 'PENDING'));
+    if (!status) setReports(allReports.filter(r => ['VALIDATED', 'IN_PROGRESS'].includes(r.status)));
     else setReports(allReports.filter(r => r.status === status));
   };
 
@@ -78,90 +78,96 @@ export default function AdminDashboard() {
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 16px 80px' }}>
       <style>{`
-        .admin-page { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .admin-page { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif; }
 
         /* STAT CARDS */
-        .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 32px; }
         @media (min-width: 640px) { .stat-grid { grid-template-columns: repeat(4, 1fr); } }
         .stat-card {
-          background: white; border-radius: 16px; padding: 16px;
-          box-shadow: 0 2px 12px rgba(59,130,246,0.1);
-          border: 1.5px solid #e2eaf6; cursor: pointer;
-          transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+          background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(16px);
+          border-radius: 20px; padding: 20px;
+          box-shadow: 0 10px 30px -10px rgba(37,99,235,0.1);
+          border: 1px solid rgba(255,255,255,0.8); cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex; align-items: center; gap: 16px;
         }
         .stat-card:hover, .stat-card.active {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(59,130,246,0.18);
-          border-color: var(--primary);
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 20px 40px -10px rgba(37,99,235,0.15);
+          background: white;
         }
-        .stat-card.active { border-color: var(--primary); background: var(--primary-light); }
-        .stat-icon-box { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-        .stat-num { font-size: 26px; font-weight: 800; font-family: 'Outfit', sans-serif; line-height: 1; }
-        .stat-lbl { font-size: 12px; color: #64748b; font-weight: 500; margin-top: 2px; }
+        .stat-card.active { border-color: var(--primary); }
+        .stat-icon-box { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .stat-num { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 4px; color: #0f172a; }
+        .stat-lbl { font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* TABS */
-        .tab-bar { display: flex; gap: 4px; background: #f0f7ff; padding: 4px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2eaf6; }
-        .tab-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; transition: all 0.2s; }
-        .tab-btn.active { background: white; color: #2563eb; box-shadow: 0 2px 8px rgba(59,130,246,0.12); }
+        .tab-bar { display: flex; gap: 8px; background: rgba(255,255,255,0.5); padding: 6px; border-radius: 16px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.6); backdrop-filter: blur(10px); }
+        .tab-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; background: transparent; font-size: 14px; font-weight: 700; color: #64748b; cursor: pointer; transition: all 0.3s; }
+        .tab-btn.active { background: white; color: #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.1); }
 
         /* FILTER CHIPS */
-        .chips { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-        .chip { padding: 6px 14px; border-radius: 20px; border: 1.5px solid #e2eaf6; background: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; color: #64748b; }
-        .chip.active { background: #2563eb; color: white; border-color: #2563eb; }
+        .chips { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .chip { padding: 8px 16px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; color: #475569; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .chip:hover { background: white; transform: translateY(-1px); }
+        .chip.active { background: linear-gradient(135deg, #1d4ed8, #3b82f6); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
 
         /* REPORT CARDS */
         .r-card {
-          background: white; border-radius: 14px; border: 1.5px solid #e2eaf6;
-          margin-bottom: 10px; box-shadow: 0 2px 8px rgba(59,130,246,0.07);
-          overflow: hidden; transition: all 0.2s;
+          background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px);
+          border-radius: 20px; border: 1px solid rgba(255,255,255,0.9);
+          margin-bottom: 14px; box-shadow: 0 8px 24px -8px rgba(37,99,235,0.08);
+          overflow: hidden; transition: all 0.3s ease;
         }
-        .r-card:hover { box-shadow: 0 4px 16px rgba(59,130,246,0.14); }
-        .r-header {
-          padding: 16px; display: flex; align-items: center;
-          gap: 12px; cursor: pointer;
-        }
-        .r-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-        .r-title { font-size: 14px; font-weight: 600; flex: 1; }
-        .r-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
-        .r-chevron { font-size: 12px; color: #94a3b8; transition: transform 0.2s; flex-shrink: 0; }
+        .r-card:hover { box-shadow: 0 12px 32px -8px rgba(37,99,235,0.15); transform: translateY(-2px); }
+        .r-header { padding: 18px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer; }
+        .r-status-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5); }
+        .r-title { font-size: 15px; font-weight: 700; flex: 1; color: #0f172a; }
+        .r-badge { padding: 5px 12px; border-radius: 24px; font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .r-chevron { font-size: 14px; color: #94a3b8; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); flex-shrink: 0; }
         .r-chevron.open { transform: rotate(180deg); }
 
         /* EXPANDED */
-        .r-body { border-top: 1px solid #f0f7ff; }
-        .r-info { padding: 16px; background: #f8faff; }
-        .r-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .r-body { border-top: 1px solid rgba(226,234,246,0.5); background: rgba(248,250,255,0.5); }
+        .r-info { padding: 20px; }
+        .r-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
         @media (max-width: 480px) { .r-info-grid { grid-template-columns: 1fr; } }
-        .r-info-item { background: white; border-radius: 8px; padding: 10px 12px; border: 1px solid #e2eaf6; }
-        .r-info-label { font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-        .r-info-val { font-size: 13px; font-weight: 500; color: #0f172a; }
-        .r-desc { background: white; border-radius: 8px; padding: 12px; border: 1px solid #e2eaf6; margin-bottom: 12px; font-size: 13px; line-height: 1.6; }
-        .r-img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; }
+        .r-info-item { background: white; border-radius: 12px; padding: 12px 16px; border: 1px solid rgba(226,234,246,0.6); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .r-info-label { font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .r-info-val { font-size: 14px; font-weight: 600; color: #1e293b; }
+        .r-desc { background: white; border-radius: 12px; padding: 16px; border: 1px solid rgba(226,234,246,0.6); margin-bottom: 16px; font-size: 14px; line-height: 1.6; color: #334155; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .r-img { width: auto; max-width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
         /* CONTROL */
-        .r-control { padding: 16px; border-top: 1px solid #e2eaf6; background: white; }
-        .ctrl-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
-        .ctrl-select { flex: 1; min-width: 140px; padding: 10px 12px; border: 1.5px solid #e2eaf6; border-radius: 10px; font-size: 13px; font-weight: 500; background: #f8faff; }
-        .ctrl-textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #e2eaf6; border-radius: 10px; font-size: 13px; resize: none; margin-bottom: 10px; background: #f8faff; box-sizing: border-box; }
-        .ctrl-save { width: 100%; padding: 12px; background: linear-gradient(135deg, #2563eb, #0ea5e9); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 3px 10px rgba(37,99,235,0.3); transition: all 0.2s; }
-        .ctrl-save:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(37,99,235,0.4); }
-        .ctrl-save:disabled { opacity: 0.6; }
+        .r-control { padding: 20px; border-top: 1px solid rgba(226,234,246,0.5); background: white; }
+        .ctrl-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+        .ctrl-select { flex: 1; min-width: 160px; padding: 12px 16px; border: 1.5px solid #e2eaf6; border-radius: 12px; font-size: 14px; font-weight: 600; background: #f8faff; outline: none; transition: border-color 0.2s; }
+        .ctrl-select:focus { border-color: #3b82f6; }
+        .ctrl-textarea { width: 100%; padding: 12px 16px; border: 1.5px solid #e2eaf6; border-radius: 12px; font-size: 14px; resize: none; margin-bottom: 16px; background: #f8faff; box-sizing: border-box; outline: none; font-family: inherit; transition: border-color 0.2s; }
+        .ctrl-textarea:focus { border-color: #3b82f6; }
+        .ctrl-save { width: 100%; padding: 14px; background: linear-gradient(135deg, #2563eb, #0ea5e9); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(37,99,235,0.3); transition: all 0.2s; }
+        .ctrl-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.4); }
+        .ctrl-save:disabled { opacity: 0.6; transform: none; box-shadow: none; }
 
         /* EMPTY */
-        .empty { text-align: center; padding: 48px 20px; background: white; border-radius: 14px; border: 2px dashed #e2eaf6; }
+        .empty { text-align: center; padding: 60px 20px; background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); border-radius: 20px; border: 2px dashed rgba(226,234,246,0.8); }
 
         /* CATEGORY */
-        .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 16px; }
-        .cat-item { background: white; border: 1.5px solid #e2eaf6; border-radius: 10px; padding: 14px 16px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 4px rgba(59,130,246,0.07); }
-        .add-row { display: flex; gap: 10px; }
-        .add-input { flex: 1; padding: 11px 14px; border: 1.5px solid #e2eaf6; border-radius: 10px; font-size: 14px; background: white; }
-        .add-btn { padding: 11px 20px; background: linear-gradient(135deg, #2563eb, #0ea5e9); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 8px rgba(37,99,235,0.25); }
+        .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 20px; }
+        .cat-item { background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.9); border-radius: 14px; padding: 16px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(37,99,235,0.05); transition: transform 0.2s; }
+        .cat-item:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.1); }
+        .add-row { display: flex; gap: 12px; }
+        .add-input { flex: 1; padding: 14px 18px; border: 1.5px solid rgba(226,234,246,0.8); border-radius: 12px; font-size: 15px; background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); outline: none; transition: border-color 0.2s; }
+        .add-input:focus { border-color: #3b82f6; background: white; }
+        .add-btn { padding: 14px 24px; background: linear-gradient(135deg, #1d4ed8, #3b82f6); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 12px rgba(37,99,235,0.25); transition: all 0.2s; }
+        .add-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.35); }
       `}</style>
 
       <div className="admin-page">
         {/* Header */}
-        <div style={{ marginBottom: 20 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Dashboard Admin</h2>
-          <p style={{ color: '#64748b', fontSize: 14 }}>Kelola laporan kerusakan fasilitas kampus</p>
+        <div style={{ marginBottom: 30 }}>
+          <h2 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8, background: 'linear-gradient(135deg, #0f172a, #334155)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Dashboard Admin</h2>
+          <p style={{ color: '#64748b', fontSize: 15 }}>Kelola laporan kerusakan fasilitas kampus dengan cepat & efisien.</p>
         </div>
 
         {/* Stat Cards — klik untuk filter */}
@@ -193,7 +199,7 @@ export default function AdminDashboard() {
           <>
             {/* Filter Chips */}
             <div className="chips">
-              {[['', 'Semua', `${allReports.filter(r => r.status !== 'PENDING').length}`],
+              {[['', 'Antrean', `${allReports.filter(r => ['VALIDATED', 'IN_PROGRESS'].includes(r.status)).length}`],
                 ['VALIDATED', 'Terverifikasi', `${allReports.filter(r => r.status === 'VALIDATED').length}`],
                 ['IN_PROGRESS', 'Diproses', `${allReports.filter(r => r.status === 'IN_PROGRESS').length}`],
                 ['RESOLVED', 'Selesai', `${allReports.filter(r => r.status === 'RESOLVED').length}`],
